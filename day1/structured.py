@@ -47,7 +47,7 @@ try:
 except ValidationError as e:
     print("Validation Error")
     print(e)
-    raise SystemExit(1)
+    raise SystemExit(1) from e
 
 print("\n=== 校验通过 ===")
 print("综述")

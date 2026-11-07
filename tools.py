@@ -90,13 +90,26 @@ tools = [
 client = OpenAI(api_key=API_KEY, base_url=BASE_URL)
 
 
-def ai_model_call(stream: bool, messages: list, response_format=None, stream_options=None) -> ChatCompletion | Stream[ChatCompletionChunk]:
+def ai_model_call(
+    stream: bool,
+    messages: list,
+    response_format=None,
+    stream_options=None,
+    use_tools: bool = True,
+) -> ChatCompletion | Stream[ChatCompletionChunk]:
+    """统一的模型调用封装。
+
+    use_tools=False 用于摘要、结构化输出等「不该让模型调工具」的场景，
+    否则模型可能返回 tool_calls 而调用方只期待一段 JSON。
+    """
     kwargs: dict = {
         "model": MODEL,
         "messages": messages,
-        "tools": tools,
         "stream": stream,
     }
+
+    if use_tools:
+        kwargs["tools"] = tools
 
     if response_format is not None:
         kwargs["response_format"] = response_format

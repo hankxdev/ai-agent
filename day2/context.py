@@ -88,7 +88,7 @@ def summarize_history(messages: list, keep_last_turns: int = MAX_HISTORY_TURNS) 
                              ],
                              {"type": "json_object"}
                              )
-    content = response.choices[0].message.content;
+    content = response.choices[0].message.content
     print(content)
     try:
         dialog = json.loads(content)
@@ -102,7 +102,7 @@ def summarize_history(messages: list, keep_last_turns: int = MAX_HISTORY_TURNS) 
         "content": f"{SUMMARY_PREFIX} {summary}"
     }
 
-    return messages[:1] + [summary_message] + recent
+    return [*messages[:1], summary_message, *recent]
 
 
 def execute_tool_call(name: str, raw_args: str) -> str:

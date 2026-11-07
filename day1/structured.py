@@ -2,7 +2,7 @@ import json
 from typing import Literal
 
 from openai import OpenAI
-from pydantic import ValidationError, BaseModel, Field
+from pydantic import BaseModel, Field, ValidationError
 
 from config import API_KEY, BASE_URL, MODEL
 
@@ -10,7 +10,7 @@ from config import API_KEY, BASE_URL, MODEL
 class ReviewResult(BaseModel):
     summary: str = Field(description="Summary of the review")
     risks: list = Field(description="List of risks")
-    severity: Literal["High", "Medium", "High"] = Field(description="Severity of the review")
+    severity: Literal["Low", "Medium", "High"] = Field(description="Severity of the review")
     score: int = Field(ge=0, le=10, description="Score of the review")
 
 

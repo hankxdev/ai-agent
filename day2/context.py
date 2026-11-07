@@ -70,9 +70,9 @@ def summarize_history(messages: list, keep_last_turns: int = MAX_HISTORY_TURNS) 
     try:
         dialog = json.loads(content)
         summary = dialog.get("summary", "")
-    except Exception as e:
-        print("dialog content:", content)
-        dialog = json.loads(content)
+    except json.JSONDecodeError:
+        print("summary parse failed, raw content:", content)
+        raise
 
     summary_message = {
         "role": "user",
@@ -97,7 +97,7 @@ def execute_tool_call(name: str, raw_args: str) -> str:
                 result = func()
         except ValidationError as e:
             return json.dumps({"error": f"validation error：{e}"}, ensure_ascii=False)
-        except ValueError as e:
+        except (ValueError, TypeError) as e:
             return json.dumps({"error": f"value error:{e}"}, ensure_ascii=False)
 
     print("tool call result:", result)
@@ -105,7 +105,7 @@ def execute_tool_call(name: str, raw_args: str) -> str:
 
 
 def run_agent(messages: list) -> None:
-    for step in range(0, MAX_STEPS + 1):
+    for step in range(MAX_STEPS + 1):
 
         messages[:] = summarize_history(messages)
 
@@ -145,7 +145,7 @@ def run_agent(messages: list) -> None:
                     if call.function.name:
                         slot["name"] = call.function.name
                     if call.function.arguments:
-                        slot["arguments"] = call.function.arguments
+                        slot["arguments"] += call.function.arguments
         print()
         if usage:
             print(

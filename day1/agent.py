@@ -1,13 +1,8 @@
 import json
-from datetime import datetime
 
-from openai import OpenAI
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import ValidationError
 
-from config import API_KEY, BASE_URL, MODEL
-from tools import tools, TOOL_REGISTRY
-
-
+from tools import TOOL_REGISTRY, ai_model_call
 
 
 def execute_tool_call(call) -> str:
@@ -27,7 +22,7 @@ def execute_tool_call(call) -> str:
                 result = func()
         except ValidationError as e:
             return json.dumps({"error": f"validation error：{e}"}, ensure_ascii=False)
-        except ValueError as e:
+        except (ValueError, TypeError) as e:
             return json.dumps({"error": f"value error:{e}"}, ensure_ascii=False)
 
     print("tool call result:", result)
@@ -36,13 +31,8 @@ def execute_tool_call(call) -> str:
 MAX_STEPS = 3
 
 def run_agent(messages:list) -> None:
-    for step in range(0, MAX_STEPS+1):
-        request = client.chat.completions.create(  # type:ignore
-            model=MODEL,
-            messages=messages,
-            tools=tools,
-            stream=False
-        )
+    for step in range(MAX_STEPS+1):
+        request = ai_model_call(False, messages)
 
         message = request.choices[0].message
         messages.append(message.model_dump(exclude_unset=True))

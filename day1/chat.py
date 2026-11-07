@@ -1,7 +1,9 @@
 
 import json
-from openai import OpenAI, OpenAIError
+
+from openai import OpenAI
 from pydantic import ValidationError
+
 from config import API_KEY, BASE_URL, MODEL
 
 client = OpenAI(api_key=API_KEY, base_url=BASE_URL)

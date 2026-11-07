@@ -1,8 +1,8 @@
 from datetime import datetime
-import json
+
 from openai import OpenAI, Stream
 from openai.types.chat import ChatCompletion, ChatCompletionChunk
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, Field
 
 from config import API_KEY, BASE_URL, MODEL
 
@@ -12,10 +12,15 @@ class AddArgs(BaseModel):
     b: int = Field(description="Argument 2", strict=True)
 
 
+class MultiplyArgs(BaseModel):
+    a: int = Field(description="第一个乘数", strict=True)
+    b: int = Field(description="第二个乘数", strict=True)
+
+
 def add(a: int, b: int) -> dict:
     """add two numbers"""
     if not isinstance(a, int) or not isinstance(b, int):
-        raise ValueError(f"only int is accepted, got {type(a).__name__} and {type(b).__name__}")
+        raise TypeError(f"only int is accepted, got {type(a).__name__} and {type(b).__name__}")
     return {
         "result": a + b
     }
@@ -34,7 +39,7 @@ def multiply(a: int, b: int) -> dict:
 TOOL_REGISTRY = {
     "add": (add, AddArgs),
     "get_current_time": (get_current_time, None),
-    "multiply": (multiply, AddArgs)
+    "multiply": (multiply, MultiplyArgs),
 }
 
 tools = [
@@ -47,7 +52,7 @@ tools = [
                 "type": "object",
                 "properties": {
                     "a": {"type": "integer", "description": "第一个加数"},
-                    "b": {"type": "int", "description": "第二个加数"},
+                    "b": {"type": "integer", "description": "第二个加数"},
                 },
                 "required": ["a", "b"],
             },
@@ -74,7 +79,7 @@ tools = [
                 "type": "object",
                 "properties": {
                     "a": {"type": "integer", "description": "第一个乘数"},
-                    "b": {"type": "int", "description": "第二个乘数"},
+                    "b": {"type": "integer", "description": "第二个乘数"},
                 }
             },
             "required": ["a", "b"],

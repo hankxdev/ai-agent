@@ -1,6 +1,6 @@
 import json
 
-from pydantic import  ValidationError
+from pydantic import ValidationError
 
 from tools import TOOL_REGISTRY, ai_model_call
 
@@ -22,7 +22,7 @@ def execute_tool_call(name: str, raw_args: str) -> str:
                 result = func()
         except ValidationError as e:
             return json.dumps({"error": f"validation error：{e}"}, ensure_ascii=False)
-        except ValueError as e:
+        except (ValueError, TypeError) as e:
             return json.dumps({"error": f"value error:{e}"}, ensure_ascii=False)
 
     print("tool call result:", result)
@@ -30,7 +30,7 @@ def execute_tool_call(name: str, raw_args: str) -> str:
 
 
 def run_agent(messages: list) -> None:
-    for step in range(0, MAX_STEPS + 1):
+    for step in range(MAX_STEPS + 1):
         stream = ai_model_call(True, messages)
         text_parts: list[str] = []
         tool_call_buffer: dict[int, dict] = {}
@@ -62,7 +62,7 @@ def run_agent(messages: list) -> None:
                     if call.function.name:
                         slot["name"] = call.function.name
                     if call.function.arguments:
-                        slot["arguments"] = call.function.arguments
+                        slot["arguments"] += call.function.arguments
         print()
         content = "".join(text_parts) or None
 

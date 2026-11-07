@@ -1,7 +1,7 @@
 import os
 
-from openai import OpenAI, OpenAIError
 from dotenv import load_dotenv
+from openai import OpenAI, OpenAIError
 
 load_dotenv("../.env")
 
@@ -60,7 +60,6 @@ try :
                 "content": "".join(answer_parts)
             }
         )
-    pass
 except KeyboardInterrupt:
     print("Ctrl+C pressed")
 except OpenAIError as e:

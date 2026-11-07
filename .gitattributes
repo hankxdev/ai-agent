@@ -1,0 +1,4 @@
+# 统一换行符，避免 Windows / WSL 之间反复出现整文件 diff
+* text=auto eol=lf
+*.bat text eol=crlf
+*.ps1 text eol=crlf

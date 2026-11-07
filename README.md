@@ -36,6 +36,11 @@ ai-agent/
 ├─ day2/
 │  ├─ streaming_agent.py # 流式 + 工具调用（参数分片重组）
 │  └─ context.py         # 历史裁剪、摘要、token 统计
+├─ day3/
+│  ├─ retry.py           # 错误分类、指数退避 + 抖动、重试执行器
+│  ├─ self_healing.py    # API 层重试 + 工具层自愈 + 死循环检测
+│  ├─ test_retry.py      # 22 个单元测试（无需 API Key）
+│  └─ test_self_healing_e2e.py  # 9 个端到端测试（假客户端驱动）
 └─ src/                 # 练习代码
 ```
 
@@ -46,17 +51,18 @@ ai-agent/
 | Day 0 | 环境 + 第一次 API 调用 | `day0/chat.py` | 完成 |
 | Day 1 | 流式、多轮对话、异常处理 | `day1/chat.py` | 完成 |
 | Day 2 | 结构化输出、Tool Calling、Agent 循环 | `day1/structured.py`、`day1/tool_calling.py`、`day1/agent.py` | 完成 |
-| Day 3 | 流式+工具、上下文管理 | `day2/streaming_agent.py`、`day2/context.py` | 进行中 |
+| Day 3 | 流式+工具、上下文管理、重试自愈 | `day2/streaming_agent.py`、`day2/context.py`、`day3/self_healing.py` | 完成 |
 | Day 4 | 任务拆解与规划（planner-executor） | 待写 | 未开始 |
 | Day 5 | 多 agent 编排与工程化 | 待写 | 未开始 |
 | Day 6 | 封装 CLI / API，选一个框架对照 | 待写 | 未开始 |
 | Day 7 | 实战项目收尾 | 待写 | 未开始 |
 
-## 三条必须记住的规则
+## 四条必须记住的规则
 
 1. **决策权在模型，执行权在程序。** 模型只生成调用请求，函数永远由你的代码执行。
 2. **模型的输出是不可信输入。** 工具参数、计划结构、最终答案，都要过 Pydantic 校验，白名单派发，异常要转成可回灌的信息。
 3. **上下文是最贵的资源。** 工具返回内容是 token 黑洞，历史要按轮次裁剪，长对话用摘要。
+4. **失败要变成信息，不是异常。** 工具失败要转成模型读得懂的结构化错误，模型才能自我纠正；确定性错误立即失败，瞬时故障才退避重试。
 
 ## Git 约定
 

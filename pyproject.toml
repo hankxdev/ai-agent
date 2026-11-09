@@ -54,5 +54,6 @@ ignore = [
 # 测试脚本需要捕获 BaseException 来保证测试运行器本身不中断
 "day3/test_retry.py" = ["BLE001"]
 "day3/test_self_healing_e2e.py" = ["BLE001"]
+"day4/test_planner.py" = ["BLE001"]
 # self_healing.py 的工具执行层故意捕获宽异常，把失败转成模型可读信息
 "day3/self_healing.py" = ["BLE001"]
